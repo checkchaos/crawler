@@ -85,12 +85,12 @@ public class PictureToPDF {
             e.printStackTrace();
         }
     }
-    public static void main(String[] args) {
-        long time1 = System.currentTimeMillis();
-        toPdf("G:/beijing/see/tcwfservice/target/classes/1/", "G:/beijing/see/tcwfservice/target/classes/a.pdf");
-        long time2 = System.currentTimeMillis();
-        int time = (int) ((time2 - time1)/1000);
-        System.out.println("执行了："+time+"秒！");
-    }
+//    public static void main(String[] args) {
+//        long time1 = System.currentTimeMillis();
+//        toPdf("G:/beijing/see/tcwfservice/target/classes/1/", "G:/beijing/see/tcwfservice/target/classes/a.pdf");
+//        long time2 = System.currentTimeMillis();
+//        int time = (int) ((time2 - time1)/1000);
+//        System.out.println("执行了："+time+"秒！");
+//    }
 
 }

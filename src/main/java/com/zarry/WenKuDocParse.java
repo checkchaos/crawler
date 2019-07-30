@@ -2,9 +2,8 @@ package com.zarry;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import javafx.scene.media.VideoTrack;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -13,17 +12,11 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
-import java.util.Map;
-import java.util.Set;
 
-@SuppressWarnings("all")
 //wkbjcloudbos.bdimg.com
 public class WenKuDocParse {
-
-    private static String url = "https://wkbjcloudbos.bdimg.com/v1/docconvert4166/wk/424083af3640849a1aa97ab57129afb8/0.json?responseContentType=application%2Fjavascript&responseCacheControl=max-age%3D3888000&responseExpires=Thu%2C%2012%20Sep%202019%2017%3A09%3A54%20%2B0800&authorization=bce-auth-v1%2Ffa1126e91489401fa7cc85045ce7179e%2F2019-07-29T09%3A09%3A54Z%2F3600%2Fhost%2F451c7f721961cc892277482dca3a16a04596f327857ef70ebccb9f8af31699fa&x-bce-range=0-14114&token=eyJ0eXAiOiJKSVQiLCJ2ZXIiOiIxLjAiLCJhbGciOiJIUzI1NiIsImV4cCI6MTU2NDM5NDk5NCwidXJpIjp0cnVlLCJwYXJhbXMiOlsicmVzcG9uc2VDb250ZW50VHlwZSIsInJlc3BvbnNlQ2FjaGVDb250cm9sIiwicmVzcG9uc2VFeHBpcmVzIiwieC1iY2UtcmFuZ2UiXX0%3D.8PqUZKc89NsmV1TiK%2BwIuanAGR4utg7yqEvBldLURI0%3D.1564394994";
     private boolean fastTitle = true;
     private double y;
     private XWPFDocument document;
@@ -31,8 +24,8 @@ public class WenKuDocParse {
     private JSONArray urls;
     private FileOutputStream out;
     private Runtime rt;
-    private static String codeJs = Constant.parentPath + "js/docParse.js";
-    private static String phantomjs = Constant.parentPath + "soft/phantomjs.exe";
+    private static String codeJs;
+    private static String phantomjs;
 
 
     public void init() throws IOException {
@@ -40,12 +33,18 @@ public class WenKuDocParse {
         document = new XWPFDocument();
         out = new FileOutputStream(new File(fileName));
         rt = Runtime.getRuntime();
+        codeJs = Constant.getParentPath(WenKuDocParse.class) + "/soft/docParse.js";
+        phantomjs = Constant.getParentPath(WenKuDocParse.class) + "/soft/phantomjs.exe";
+    }
+
+    public WenKuDocParse() throws IOException {
+        init();
     }
 
     public static void main(String[] args) throws Exception {
         WenKuDocParse parse = new WenKuDocParse();
-        parse.init();
         parse.run(parse);
+//        String jarWholePath = WenKuDocParse.class.getProtectionDomain().getCodeSource().getLocation().getFile();
     }
 
     public void run(WenKuDocParse parse) throws Exception {
@@ -54,14 +53,12 @@ public class WenKuDocParse {
         }
         document.write(out);
         document.close();
-        parse.close(null, out);
+        close(null, out);
     }
 
     public void readJson() throws IOException {
-        String parentPath = Constant.parentPath;
-        ClassPathResource resource = new ClassPathResource("json/urls.json");
-        File file = resource.getFile();
-        String jsonString = FileUtils.readFileToString(file);
+        FileInputStream inputStream = new FileInputStream(Constant.getParentPath(WenKuDocParse.class) + "/soft/urls.json");
+        String jsonString = IOUtils.toString(inputStream);
         JSONObject json = JSONObject.parseObject(jsonString);
         urls = (JSONArray) json.get("urls");
         fileName = (String) json.get("fileName");
